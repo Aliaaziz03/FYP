@@ -92,7 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Expanded(
                 child: PageView.builder(
                   itemCount: categories.length,
-                  controller: PageController(viewportFraction: 0.6),
+                  controller: PageController(viewportFraction: 0.5),
                   onPageChanged: (int newIndex) {
                     setState(() {
                       _focusedIndex = newIndex;
@@ -107,7 +107,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Opacity(
                         opacity: i == _focusedIndex ? 1.0 : 0.6,
                         child: Transform.scale(
-                          scale: i == _focusedIndex ? 1.1 : 0.9,
+                          scale: i == _focusedIndex ? 1.2 : 1.0,
                           child: GestureDetector(
                             onTap: () {
                               Widget destination;
