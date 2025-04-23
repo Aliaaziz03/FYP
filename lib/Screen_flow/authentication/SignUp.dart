@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fyp_apps/Screen_flow/3Davatar/input.dart';
 import 'package:fyp_apps/Screen_flow/authentication/SignIn.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -61,7 +62,7 @@ class _SignUpState extends State<SignUp> {
         });
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const MeasurementInputPage()),
+          MaterialPageRoute(builder: (context) => MeasurementInputPage()),
         );
       } else {
         print("Error: UserCredential.user is null.");
