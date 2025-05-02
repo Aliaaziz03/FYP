@@ -15,7 +15,6 @@ class Signin extends StatefulWidget {
 }
 
 class _SigninState extends State<Signin> {
-
   String? errorMessage = '';
   bool isLogin = true;
   String? savedEmail = ''; // Variable to store the last used email
@@ -26,19 +25,17 @@ class _SigninState extends State<Signin> {
   @override
   void initState() {
     super.initState();
-    _loadLastUsedEmail();  // Load the last used email when the page is created
+    _loadLastUsedEmail();
   }
 
-  // Load the last used email from shared preferences
   Future<void> _loadLastUsedEmail() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      savedEmail = prefs.getString('lastUsedEmail') ?? '';  // Default to empty if not found
-      _controllerEmail.text = savedEmail ?? '';  // Set the email in the text field
+      savedEmail = prefs.getString('lastUsedEmail') ?? '';
+      _controllerEmail.text = savedEmail ?? '';
     });
   }
 
-  /// Email & Password Login
   Future<void> signInWithEmailAndPassword() async {
     if (_controllerEmail.text.isEmpty || !_controllerEmail.text.contains('@')) {
       setState(() {
@@ -60,7 +57,6 @@ class _SigninState extends State<Signin> {
         password: _controllerPassword.text,
       );
 
-      // Store the email for future use
       final prefs = await SharedPreferences.getInstance();
       prefs.setString('lastUsedEmail', _controllerEmail.text);
 
@@ -68,19 +64,15 @@ class _SigninState extends State<Signin> {
         MaterialPageRoute(builder: (_) => HomeScreen()),
       );
     } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found') {
-        setState(() {
+      setState(() {
+        if (e.code == 'user-not-found') {
           errorMessage = "No user found for this email. Please register first.";
-        });
-      } else if (e.code == 'wrong-password') {
-        setState(() {
+        } else if (e.code == 'wrong-password') {
           errorMessage = "Incorrect password. Please try again.";
-        });
-      } else {
-        setState(() {
+        } else {
           errorMessage = e.message ?? "An unknown error occurred.";
-        });
-      }
+        }
+      });
     } catch (e) {
       setState(() {
         errorMessage = "An unexpected error occurred. Please try again.";
@@ -88,80 +80,68 @@ class _SigninState extends State<Signin> {
     }
   }
 
- /* /// Biometric Authentication
-  Future<void> _authenticateWithFingerprint() async {
-    try {
-      bool isBiometricAvailable = await _localAuth.canCheckBiometrics;
-      if (!isBiometricAvailable) {
-        setState(() {
-          errorMessage = "Fingerprint authentication is not available.";
-        });
-        return;
-      }
-
-      bool isAuthenticated = await _localAuth.authenticate(
-        localizedReason: 'Use your fingerprint to authenticate',
-        options: const AuthenticationOptions(biometricOnly: true),
-      );
-
-      if (isAuthenticated) {
-        // Navigate to the desired screen after successful authentication
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => PeriodSelectionScreen()),
-        );
-      } else {
-        setState(() {
-          errorMessage = "Fingerprint authentication failed.";
-        });
-      }
-    } catch (e) {
-      setState(() {
-        errorMessage = "Error during authentication: $e";
-      });
-    }
-  }*/
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
-      body: SafeArea(
-        child: SingleChildScrollView( // Wrap with SingleChildScrollView to prevent overflow
-          child: Center(
-            child: Container(
-              width: MediaQuery.of(context).size.width * 0.9, // Adjust width
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Colors.black26,
-                    blurRadius: 10,
-                    offset: Offset(0, 5),
+      body: Container(
+      color: Colors.pink.withOpacity(0.1),
+      child:SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'SIGN IN',
+                  style: GoogleFonts.patrickHandSc(
+                    fontSize: 40,
+                    color:  Colors.black,
+                    fontWeight: FontWeight.bold,
                   ),
-                ],
-              ),
-              padding: const EdgeInsets.all(30),
-              child: Column(
-                mainAxisSize: MainAxisSize.min, // Shrinks to fit content
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    'LOGIN',
-                    style: GoogleFonts.patrickHand(
-                      fontSize: 40,
-                      color: Colors.pink,
-                      fontWeight: FontWeight.bold,
-                    ),
+                ),
+                const SizedBox(height: 20),
+                Container(
+                  
+                  width: MediaQuery.of(context).size.width * 0.9,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Colors.black26,
+                        blurRadius: 10,
+                        offset: Offset(0, 5),
+                      ),
+                    ],
                   ),
-                  Form(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 50, horizontal: 20),
-                      child: Column(
-                        children: [
-                          TextFormField(
-                            controller: _controllerEmail, // Email field
+                  padding: const EdgeInsets.all(30),
+                  child: Form(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                       const SizedBox(height: 50),
+
+                        Container(
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFFCE4EC), // light pink background
+                              borderRadius: BorderRadius.circular(30),
+                              boxShadow: const [
+                                BoxShadow(
+                                  color: Colors.black26,
+                                  offset: Offset(4, 4),
+                                  blurRadius: 8,
+                                ),
+                                BoxShadow(
+                                  color: Colors.white,
+                                  offset: Offset(-4, -4),
+                                  blurRadius: 8,
+                                ),
+                              ],
+                            ),
+
+                          child: TextFormField(
+                            controller: _controllerEmail,
                             keyboardType: TextInputType.emailAddress,
                             style: GoogleFonts.patrickHand(),
                             decoration: InputDecoration(
@@ -170,114 +150,204 @@ class _SigninState extends State<Signin> {
                               hintText: 'Enter email',
                               hintStyle: GoogleFonts.patrickHand(),
                               prefixIcon: const Icon(Icons.email),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(30.0),
+                         // REMOVE black border by overriding all border states
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(30.0),
+                            borderSide: BorderSide.none,
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(30.0),
+                            borderSide: BorderSide.none,
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(30.0),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
+                          ),
+                        ),   
+                        const SizedBox(height: 20),
+
+                            Container(
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFFCE4EC), // light pink background
+                              borderRadius: BorderRadius.circular(30),
+                              boxShadow: const [
+                                BoxShadow(
+                                  color: Colors.black26,
+                                  offset: Offset(4, 4),
+                                  blurRadius: 8,
+                                ),
+                                BoxShadow(
+                                  color: Colors.white,
+                                  offset: Offset(-4, -4),
+                                  blurRadius: 8,
+                                ),
+                              ],
+                            ),
+                            child:TextFormField(
+                          controller: _controllerPassword,
+                          keyboardType: TextInputType.visiblePassword,
+                          obscureText: true,
+                          style: GoogleFonts.patrickHand(),
+                          decoration: InputDecoration(
+                            labelText: 'Password',
+                            labelStyle: GoogleFonts.patrickHand(),
+                            hintText: 'Enter password',
+                            hintStyle: GoogleFonts.patrickHand(),
+                            prefixIcon: const Icon(Icons.lock),
+                         border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(30.0),
+                            borderSide: BorderSide.none,
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(30.0),
+                            borderSide: BorderSide.none,
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(30.0),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
+                        ),
+                        ),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: TextButton(
+                            onPressed: () async {
+                              final email = _controllerEmail.text.trim();
+
+                              if (email.isEmpty || !email.contains('@')) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text("Please enter a valid email to reset password.")),
+                                );
+                                return;
+                              }
+
+                              try {
+                                await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text("Password reset email sent. Check your inbox.")),
+                                );
+                              } on FirebaseAuthException catch (e) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text(e.message ?? "An error occurred.")),
+                                );
+                              }
+                            },
+                            child: Text(
+                              "Forgot password?",
+                              style: GoogleFonts.patrickHand(
+                                color: Colors.pink,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
                           ),
-                          const SizedBox(height: 20),
-                          TextFormField(
-                            controller: _controllerPassword, // Password field
-                            keyboardType: TextInputType.visiblePassword,
-                            obscureText: true,
-                            style: GoogleFonts.patrickHand(),
-                            decoration: InputDecoration(
-                              labelText: 'Password',
-                              labelStyle: GoogleFonts.patrickHand(),
-                              hintText: 'Enter password',
-                              hintStyle: GoogleFonts.patrickHand(),
-                              prefixIcon: const Icon(Icons.lock),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(30.0),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 20),
-                          if (errorMessage != null && errorMessage!.isNotEmpty)
-                            Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 10),
-                              child: Text(
-                                errorMessage!,
-                                style: const TextStyle(color: Colors.red, fontSize: 14),
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
+                        ),
+
+                                              
+                        if (errorMessage != null && errorMessage!.isNotEmpty)
                           Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Expanded(
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      gradient: const LinearGradient(
-                                        colors: [Color.fromARGB(255, 175, 69, 105), Color.fromARGB(255, 228, 157, 181)],
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.bottomRight,
-                                      ),
-                                      borderRadius: BorderRadius.circular(30),
-                                      boxShadow: const [
-                                        BoxShadow(
-                                          color: Colors.black26,
-                                          blurRadius: 10,
-                                          offset: Offset(0, 5),
-                                        ),
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            child: Text(
+                              errorMessage!,
+                              style: const TextStyle(color: Colors.red, fontSize: 14),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 20),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    gradient: const LinearGradient(
+                                      colors: [
+                                        Color.fromARGB(255, 175, 69, 105),
+                                        Color.fromARGB(255, 228, 157, 181)
                                       ],
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
                                     ),
-                                    child: MaterialButton(
-                                      onPressed: signInWithEmailAndPassword,
-                                      textColor: Colors.white,
-                                      padding: const EdgeInsets.symmetric(vertical: 15),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(30),
-                                      ),
-                                      child: const Text(
-                                        'Login',
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                        ),
+                                    borderRadius: BorderRadius.circular(30),
+                                    boxShadow: const [
+                                      BoxShadow(
+                                        color: Colors.black26,
+                                        blurRadius: 8,
+                                        offset: Offset(4, 4),
+                                      ),     
+                                  BoxShadow(
+                                  color: Colors.white,
+                                  offset: Offset(-4, -4),
+                                  blurRadius: 8,
+                                ),
+                              ],
+                            
+                                  ),
+                                  child: MaterialButton(
+                                    onPressed: signInWithEmailAndPassword,
+                                    textColor: Colors.black,
+                                    padding: const EdgeInsets.symmetric(vertical: 15),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(30),
+                                    ),
+                                    child: const Text(
+                                      'Login',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
                                       ),
                                     ),
                                   ),
                                 ),
-                                const SizedBox(width: 10),
-                                /*IconButton(
-                                  icon: const Icon(Icons.fingerprint, size: 40, color: Colors.pink),
-                                  onPressed: _authenticateWithFingerprint,
-                                ),*/
-                              ],
-                            ),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (_) => const SignUp()),
-                              );
-                            },
-                            child: Text(
-                              'Sign Up',
-                              style: GoogleFonts.patrickHand(
-                                fontSize: 16,
-                                color: Colors.pink,
-                                fontWeight: FontWeight.bold,
-                                decoration: TextDecoration.underline,
-                                decorationColor: Colors.pink,
-                                decorationThickness: 2
                               ),
+                            ],
+                          ),
+                        ),
+                        Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Don't have an account?",
+                            style: GoogleFonts.patrickHand(
+                              fontSize: 16,
+                              color: Colors.black87,
                             ),
                           ),
-                        ],
+                        TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) => const SignUp()),
+                            );
+                          },
+                          child: Text(
+                            'SIGN UP',
+                            style: GoogleFonts.patrickHand(
+                              fontSize: 16,
+                              color: Colors.pink,
+                              fontWeight: FontWeight.bold,
+                              decoration: TextDecoration.underline,
+                              decorationColor: Colors.pink,
+                              decorationThickness: 2,
+                            ),
+                          ),
+                        ),
+                      ],
                       ),
+                      ],
                     ),
                   ),
-                ],
-              ),
+                ),
+                
+              ],
             ),
           ),
         ),
       ),
+      )
     );
   }
 }
