@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fyp_apps/Screen_flow/HomeScreen.dart';
 import 'package:model_viewer_plus/model_viewer_plus.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
@@ -60,8 +61,7 @@ class _AvatarMatcherPageState extends State<AvatarMatcherPage> with TickerProvid
       isLoading = false;
     });
 
-    // Start curtain animation after size is matched
-    await Future.delayed(Duration(milliseconds: 500)); // slight delay before animation
+    await Future.delayed(Duration(milliseconds: 500));
     _curtainController.forward().then((_) {
       setState(() {
         showCurtain = false;
@@ -126,112 +126,140 @@ class _AvatarMatcherPageState extends State<AvatarMatcherPage> with TickerProvid
   }
 
   @override
-Widget build(BuildContext context) {
-  return Scaffold(
-    body: Container(
-      decoration: BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage('assets/bg_avatar.jpg'), // Ensure this image exists and path is correct
-          fit: BoxFit.cover,
-        ),
-      ),
-      child: Stack(
-        children: [
-          Center(
-            child: isLoading
-                ? CircularProgressIndicator()
-                : matchedSize != null
-                    ? Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            "Your matched size is: $matchedSize",
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white, // For visibility on bg
-                            ),
-                          ),
-                          SizedBox(height: 20),
-                          Container(
-                            height: 300,
-                            child: FutureBuilder<String>(
-                              future: getLocalModelPath(getAvatarAssetPath(matchedSize!)),
-                              builder: (context, snapshot) {
-                                if (!snapshot.hasData) {
-                                  return CircularProgressIndicator();
-                                }
-                                return ModelViewer(
-                                  src: 'file://${snapshot.data!}',
-                                  alt: "A 3D avatar",
-                                  ar: false,
-                                  autoRotate: true,
-                                  cameraControls: true,
-                                  backgroundColor: Colors.transparent,
-                                );
-                              },
-                            ),
-                          ),
-                        ],
-                      )
-                    : Text(
-                        "Could not retrieve measurements.",
-                        style: TextStyle(color: Colors.white),
-                      ),
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/bg_avatar.jpg'),
+            fit: BoxFit.cover,
           ),
-          if (showCurtain)
-            AnimatedBuilder(
-              animation: _curtainAnimation,
-              builder: (context, child) {
-                double curtainWidth = MediaQuery.of(context).size.width / 2;
-                return Stack(
-                  children: [
-                    Positioned(
-                      left: -curtainWidth * _curtainAnimation.value,
-                      top: 0,
-                      bottom: 0,
-                      width: curtainWidth,
-                      child: Image.asset(
-                        'assets/curtain.jpg',
-                        fit: BoxFit.cover,
-                        alignment: Alignment.centerRight,
-                      ),
+        ),
+        child: Stack(
+          children: [
+            // 3D avatar viewer (ModelViewer)
+            if (!isLoading && matchedSize != null)
+              Positioned.fill(
+                child: FutureBuilder<String>(
+                  future: getLocalModelPath(getAvatarAssetPath(matchedSize!)),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return Center(child: CircularProgressIndicator());
+                    }
+                    return ModelViewer(
+                      src: 'file://${snapshot.data!}',
+                      alt: "A 3D avatar",
+                      ar: false,
+                      autoRotate: true,
+                      cameraControls: true,
+                      disableZoom: true,
+                      backgroundColor: Colors.transparent,
+                    );
+                  },
+                ),
+              ),
+
+            // Loading spinner
+            if (isLoading)
+              Center(child: CircularProgressIndicator()),
+
+            // Match size label
+            if (!isLoading && matchedSize != null)
+              Positioned(
+                bottom: 40,
+                left: 0,
+                right: 0,
+                child: Center(
+                  child: Text(
+                    "Your matched size is: $matchedSize",
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      shadows: [
+                        Shadow(
+                          blurRadius: 10,
+                          color: Colors.black,
+                          offset: Offset(2, 2),
+                        ),
+                      ],
                     ),
-                    Positioned(
-                      right: -curtainWidth * _curtainAnimation.value,
-                      top: 0,
-                      bottom: 0,
-                      width: curtainWidth,
-                      child: Image.asset(
-                        'assets/curtain.jpg',
-                        fit: BoxFit.cover,
-                        alignment: Alignment.centerLeft,
-                      ),
-                    ),
-                    if (_curtainAnimation.value == 0.0)
-                      Center(
-                        child: Container(
-                          width: 200,
-                          height: 200,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            gradient: RadialGradient(
-                              colors: [
-                                Colors.white.withOpacity(0.3),
-                                Colors.transparent,
-                              ],
-                              radius: 0.8,
-                            ),
-                          ),
+                  ),
+                ),
+              ),
+
+            // Fallback if no matched size
+            if (!isLoading && matchedSize == null)
+              Center(
+                child: Text(
+                  "Could not retrieve measurements.",
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+
+            // Curtain animation
+            if (showCurtain)
+              AnimatedBuilder(
+                animation: _curtainAnimation,
+                builder: (context, child) {
+                  double curtainWidth = MediaQuery.of(context).size.width / 2;
+                  return Stack(
+                    children: [
+                      Positioned(
+                        left: -curtainWidth * _curtainAnimation.value,
+                        top: 0,
+                        bottom: 0,
+                        width: curtainWidth,
+                        child: Image.asset(
+                          'assets/curtain.jpg',
+                          fit: BoxFit.cover,
+                          alignment: Alignment.centerRight,
                         ),
                       ),
-                  ],
-                );
-              },
+                      Positioned(
+                        right: -curtainWidth * _curtainAnimation.value,
+                        top: 0,
+                        bottom: 0,
+                        width: curtainWidth,
+                        child: Image.asset(
+                          'assets/curtain.jpg',
+                          fit: BoxFit.cover,
+                          alignment: Alignment.centerLeft,
+                        ),
+                      ),
+
+                    ],
+                  );
+                },
+              ),
+
+            // Top-left "X" close button
+            if(!showCurtain)
+            Positioned(
+              top: 30,
+              left: 16,
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => HomeScreen()),
+                  );
+                },
+                child: Container(
+                  padding: EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.5),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(Icons.close, color: Colors.white),
+                ),
+              ),
             ),
-        ],
+          ],
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 }

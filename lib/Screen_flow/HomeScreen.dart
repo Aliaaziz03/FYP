@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fyp_apps/Screen_flow/AR_background/AvatarViewer.dart';
 import 'package:fyp_apps/Screen_flow/authentication/SignIn.dart';
 import 'package:fyp_apps/Screen_flow/3Davatar/MatchAvatar.dart';
 import 'package:fyp_apps/Screen_flow/3Davatar/input.dart';
@@ -16,15 +17,6 @@ class WardrobePage extends StatelessWidget {
   }
 }
 
-class OutfitFinderPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text("Find Your Outfit")),
-      body: Center(child: Text("Find Your Outfit Page")),
-    );
-  }
-}
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -252,7 +244,7 @@ void _updateAvatar(String newAvatar) {
       destination = WardrobePage();
       break;
     case 'Find your outfit':
-      destination = OutfitFinderPage();
+      destination = AvatarViewerScreen();
       break;
     default:
       destination = Scaffold(body: Center(child: Text('Page not found')));

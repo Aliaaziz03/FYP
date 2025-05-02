@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.example.fyp_apps"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 35
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
@@ -24,8 +24,8 @@ android {
         applicationId = "com.example.fyp_apps"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = 23
-        targetSdk = 33
+        minSdk = 24
+        targetSdk = 35
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
