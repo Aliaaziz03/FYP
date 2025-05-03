@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class ProfilePage extends StatefulWidget {
   final String currentAvatar;
@@ -75,78 +76,167 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Your Profile')),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            GestureDetector(
-              onTap: () {
-                setState(() {
-                  showAvatars = !showAvatars;
-                });
-              },
-              child: CircleAvatar(
-                radius: 60,
-                backgroundImage: AssetImage(selectedAvatar),
-                backgroundColor: Colors.grey.shade200,
+      appBar: AppBar(
+        title: Text('PROFILE PAGE',
+        style: GoogleFonts.patrickHand(
+          fontWeight: FontWeight.bold,
+          fontSize: 24,
+          )),
+        backgroundColor: Colors.pink.withOpacity(0.1),
+      ),
+      body: Container(
+          height: double.infinity,
+        color: Colors.pink.withOpacity(0.1),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    showAvatars = !showAvatars;
+                  });
+                },
+                child: CircleAvatar(
+                  radius: 80,
+                  backgroundImage: AssetImage(selectedAvatar),
+                  backgroundColor: Colors.grey.shade200,
+                ),
+              ),
+              const SizedBox(height: 20),
+              if (showAvatars)
+                Wrap(
+                  spacing: 16,
+                  alignment: WrapAlignment.center,
+                  children: avatarList.map((avatar) {
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          selectedAvatar = avatar;
+                        });
+                      },
+                      child: CircleAvatar(
+                        radius: 40,
+                        backgroundImage: AssetImage(avatar),
+                        backgroundColor: selectedAvatar == avatar
+                            ? Colors.blueAccent
+                            : Colors.transparent,
+                      ),
+                    );
+                  }).toList(),
+                ),
+              const SizedBox(height: 30),
+              _buildInputField("Name", _nameController, TextInputType.text),
+              const SizedBox(height: 15),
+              _buildInputField("Height (cm)", _heightController, TextInputType.number),
+              const SizedBox(height: 15),
+              _buildInputField("Hip (cm)", _hipController, TextInputType.number),
+              const SizedBox(height: 15),
+              _buildInputField("Chest (cm)", _chestController, TextInputType.number),
+              const SizedBox(height: 15),
+              _buildInputField("Waist (cm)", _waistController, TextInputType.number),
+              const SizedBox(height: 30),
+              Padding(
+  padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+  child: Container(
+    
+    decoration: BoxDecoration(
+      gradient: const LinearGradient(
+        colors: [
+          Color.fromARGB(255, 175, 69, 105),
+          Color.fromARGB(255, 228, 157, 181)
+        ],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      ),
+      borderRadius: BorderRadius.circular(30),
+      boxShadow: const [
+        BoxShadow(
+          color: Colors.black26,
+          blurRadius: 8,
+          offset: Offset(4, 4),
+        ),
+        BoxShadow(
+          color: Colors.white,
+          offset: Offset(-4, -4),
+          blurRadius: 8,
+        ),
+      ],
+    ),
+    child: Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(30),
+        onTap: _saveProfile,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 15),
+          child: Center(
+            child: Text(
+              "Save Profile",
+              style: GoogleFonts.patrickHand(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
               ),
             ),
-            const SizedBox(height: 20),
-            if (showAvatars)
-              Center(
-                    child: Wrap(
-      spacing: 16,
-      alignment: WrapAlignment.center,
-      children: avatarList.map((avatar) {
-        return GestureDetector(
-          onTap: () {
-            setState(() {
-              selectedAvatar = avatar;
-            });
-          },
-               child: CircleAvatar(
-            radius: 40,
-            backgroundImage: AssetImage(avatar),
-            backgroundColor: selectedAvatar == avatar ? Colors.blueAccent : Colors.transparent,
           ),
-        );
-      }).toList(),
+        ),
+      ),
     ),
   ),
-            const SizedBox(height: 30),
-            _buildInputField("Name", _nameController),
-            const SizedBox(height: 15),
-            _buildInputField("Height (cm)", _heightController),
-            const SizedBox(height: 15),
-            _buildInputField("Hip (cm)", _hipController),
-            const SizedBox(height: 15),
-            _buildInputField("Chest (cm)", _chestController),
-            const SizedBox(height: 15),
-            _buildInputField("Waist (cm)", _waistController),
-            const SizedBox(height: 30),
-            ElevatedButton(
-              onPressed: _saveProfile,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.pink,
-                minimumSize: const Size(double.infinity, 50),
-              ),
-              child: const Text("Save Profile", style: TextStyle(fontSize: 16)),
-            ),
-          ],
+),
+
+ 
+              
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildInputField(String label, TextEditingController controller) {
-    return TextFormField(
-      controller: controller,
-      decoration: InputDecoration(
-        labelText: label,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-        prefixIcon: const Icon(Icons.person_outline),
+  Widget _buildInputField(String label, TextEditingController controller, TextInputType type) {
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFFFCE4EC),
+        borderRadius: BorderRadius.circular(30),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black26,
+            offset: Offset(4, 4),
+            blurRadius: 8,
+          ),
+          BoxShadow(
+            color: Colors.white,
+            offset: Offset(-4, -4),
+            blurRadius: 8,
+          ),
+        ],
+      ),
+      child: TextFormField(
+        controller: controller,
+        keyboardType: type,
+        style: GoogleFonts.patrickHand(),
+        decoration: InputDecoration(
+          labelText: label,
+          labelStyle: GoogleFonts.patrickHand(),
+          hintText: 'Enter $label',
+          hintStyle: GoogleFonts.patrickHand(),
+          prefixIcon: const Icon(Icons.straighten),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(30.0),
+            borderSide: BorderSide.none,
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(30.0),
+            borderSide: BorderSide.none,
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(30.0),
+            borderSide: BorderSide.none,
+          ),
+        ),
       ),
     );
   }

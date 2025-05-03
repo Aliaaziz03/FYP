@@ -280,10 +280,9 @@ class _SignUpState extends State<SignUp> {
                                       },
                                     ),
                                 ),
-                                    const SizedBox(height: 20),
+                                    const SizedBox(height: 20),      
                                         
-                                        
-                                                               Container(
+                                Container(
                                 decoration: BoxDecoration(
                                   color: const Color(0xFFFCE4EC), // light pink background
                                   borderRadius: BorderRadius.circular(30),

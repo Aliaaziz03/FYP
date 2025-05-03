@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:ar_flutter_plugin/ar_flutter_plugin.dart';
-import 'package:vector_math/vector_math_64.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:vector_math/vector_math_64.dart' ;
 import 'dart:ui' as ui;
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:fyp_apps/Screen_flow/SocialNetwork/sharing.dart';
 import 'package:flutter/rendering.dart';
 import 'package:ar_flutter_plugin/datatypes/node_types.dart';
 import 'package:ar_flutter_plugin/models/ar_node.dart';
@@ -25,7 +25,11 @@ class AvatarViewerScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('3D Avatar in AR'),
+        title: Text('3D Avatar in AR',
+        style: GoogleFonts.patrickHand(
+          fontSize: 30,
+          fontWeight: FontWeight.bold,
+        ),),
         actions: [
           Builder(
             builder: (context) {

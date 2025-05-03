@@ -133,7 +133,7 @@ class _AvatarMatcherPageState extends State<AvatarMatcherPage> with TickerProvid
         height: double.infinity,
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/bg_avatar.jpg'),
+            image: AssetImage('assets/bgView.jpg'),
             fit: BoxFit.cover,
           ),
         ),

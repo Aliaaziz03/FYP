@@ -20,24 +20,47 @@ class _MeasurementInputPageState extends State<MeasurementInputPage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  @override
+void initState() {
+  super.initState();
+  _loadMeasurements();
+}
+
+Future<void> _loadMeasurements() async {
+  final user = _auth.currentUser;
+  if (user == null) return;
+
+  final doc = await _firestore.collection('users').doc(user.uid).get();
+  if (doc.exists) {
+    final data = doc.data();
+    if (data != null) {
+      _heightController.text = data['height'] ?? '';
+      _hipController.text = data['hip'] ?? '';
+      _chestController.text = data['chest'] ?? '';
+      _waistController.text = data['waist'] ?? '';
+    }
+  }
+}
+
   Future<void> _saveMeasurements() async {
     final user = _auth.currentUser;
     if (user == null) return;
 
-    await _firestore.collection('measurements').doc(user.uid).set({
+    await _firestore.collection('users').doc(user.uid).update({
       'height': _heightController.text.trim(),
       'hip': _hipController.text.trim(),
       'chest': _chestController.text.trim(),
       'waist': _waistController.text.trim(),
-      'email': user.email,
     });
 
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Measurements saved successfully!')),
     );
 
-        // Navigate to home or profile or next screen
-    Navigator.pop(context);
+     Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) =>  HomeScreen()),
+    ); 
   }
 
   Widget _buildTextField(String label, TextEditingController controller) {
