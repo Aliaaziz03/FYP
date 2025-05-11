@@ -6,16 +6,7 @@ import 'package:fyp_apps/Screen_flow/authentication/SignIn.dart';
 import 'package:fyp_apps/Screen_flow/3Davatar/MatchAvatar.dart';
 import 'package:fyp_apps/Screen_flow/3Davatar/input.dart';
 import 'package:fyp_apps/Screen_flow/Profile.dart';
-
-class WardrobePage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text("Wardrobe")),
-      body: Center(child: Text("Wardrobe Page")),
-    );
-  }
-}
+import 'package:fyp_apps/Screen_flow/3Dcloth/wardrobe.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
