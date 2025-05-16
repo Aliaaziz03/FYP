@@ -74,6 +74,11 @@ flutter:
     - assets/avatar/
     - assets/profile/
     - assets/clothes/
+    - assets/match/
+    - assets/match/Avatar_M/
+    - assets/match/Avatar_L/
+    - assets/match/Avatar_XL/
+    
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 

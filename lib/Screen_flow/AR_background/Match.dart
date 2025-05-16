@@ -10,13 +10,11 @@ class ClothingItem {
   final String name;
   final String imagePath;
   final List<String> availableSizes;
-  final Map<String, String> modelPaths;
 
   ClothingItem({
     required this.name,
     required this.imagePath,
     required this.availableSizes,
-    required this.modelPaths,
   });
 }
 
@@ -27,7 +25,8 @@ class MatcherPage extends StatefulWidget {
 
 class _MatcherPageState extends State<MatcherPage> {
   String? matchedSize;
-  String? selectedClothingModel;
+  String? selectedClothingName;
+  String? selectedSizeForClothes;
   bool isLoading = true;
 
   final List<ClothingItem> clothingItems = [
@@ -35,56 +34,21 @@ class _MatcherPageState extends State<MatcherPage> {
       name: 'Floral',
       imagePath: 'assets/clothes/floral.png',
       availableSizes: ['S', 'M', 'L', 'XL'],
-      modelPaths: {
-        'S': 'assets/clothes_models/sweater_brown_s.glb',
-        'M': 'assets/clothes_models/sweater_brown_m.glb',
-        'L': 'assets/clothes_models/sweater_brown_l.glb',
-        'XL': 'assets/clothes_models/sweater_brown_xl.glb',
-      },
     ),
     ClothingItem(
-      name: 'Floral',
-      imagePath: 'assets/clothes/floral.png',
-      availableSizes: ['S', 'M', 'L', 'XL'],
-      modelPaths: {
-        'S': 'assets/clothes_models/sweater_brown_s.glb',
-        'M': 'assets/clothes_models/sweater_brown_m.glb',
-        'L': 'assets/clothes_models/sweater_brown_l.glb',
-        'XL': 'assets/clothes_models/sweater_brown_xl.glb',
-      },
-    ),
-        ClothingItem(
       name: 'Silk',
       imagePath: 'assets/clothes/silk.png',
       availableSizes: ['S', 'M', 'L', 'XL'],
-      modelPaths: {
-        'S': 'assets/clothes_models/sweater_brown_s.glb',
-        'M': 'assets/clothes_models/sweater_brown_m.glb',
-        'L': 'assets/clothes_models/sweater_brown_l.glb',
-        'XL': 'assets/clothes_models/sweater_brown_xl.glb',
-      },
     ),
-        ClothingItem(
+    ClothingItem(
       name: 'Songket',
       imagePath: 'assets/clothes/songket.png',
       availableSizes: ['S', 'M', 'L', 'XL'],
-      modelPaths: {
-        'S': 'assets/clothes_models/sweater_brown_s.glb',
-        'M': 'assets/clothes_models/sweater_brown_m.glb',
-        'L': 'assets/clothes_models/sweater_brown_l.glb',
-        'XL': 'assets/clothes_models/sweater_brown_xl.glb',
-      },
     ),
     ClothingItem(
       name: 'Lace',
       imagePath: 'assets/clothes/lace.png',
       availableSizes: ['S', 'M', 'L', 'XL'],
-      modelPaths: {
-        'S': 'assets/clothes_models/cardigan_green_s.glb',
-        'M': 'assets/clothes_models/cardigan_green_m.glb',
-        'L': 'assets/clothes_models/cardigan_green_l.glb',
-        'XL': 'assets/clothes_models/cardigan_green_xl.glb',
-      },
     ),
   ];
 
@@ -124,11 +88,16 @@ class _MatcherPageState extends State<MatcherPage> {
     int maxScore = [heightScore, hipScore, chestScore, waistScore].reduce((a, b) => a > b ? a : b);
 
     switch (maxScore) {
-      case 1: return "S";
-      case 2: return "M";
-      case 3: return "L";
-      case 4: return "XL";
-      default: return "S";
+      case 1:
+        return "S";
+      case 2:
+        return "M";
+      case 3:
+        return "L";
+      case 4:
+        return "XL";
+      default:
+        return "S";
     }
   }
 
@@ -159,8 +128,8 @@ class _MatcherPageState extends State<MatcherPage> {
     }
   }
 
-  String getAvatarAssetPath(String size) {
-    return 'assets/avatar/avatar_${size.toLowerCase()}.glb';
+  String getCombinedModelPath(String clothingName, String clothingSize, String avatarSize) {
+    return 'assets/match/${clothingName.toLowerCase()}_${clothingSize.toLowerCase()}_${avatarSize.toLowerCase()}.glb';
   }
 
   Future<String> getLocalModelPath(String assetPath) async {
@@ -171,34 +140,49 @@ class _MatcherPageState extends State<MatcherPage> {
     return tempFile.path;
   }
 
-void showSizePicker(ClothingItem item) {
-  showDialog(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        title: Text("Pilih saiz untuk ${item.name}"),
-        content: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: item.availableSizes.map((size) {
-            return ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                setState(() {
-                  selectedClothingModel = item.modelPaths[size];
-                });
-              },
-              child: Text(size),
-            );
-          }).toList(),
-        ),
-      );
-    },
-  );
-}
+  void showSizePicker(ClothingItem item) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("Pilih saiz untuk ${item.name}"),
+          content: Wrap(
+            spacing: 8,
+            children: item.availableSizes.map((size) {
+              return ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  setState(() {
+                    selectedClothingName = item.name;
+                    selectedSizeForClothes = size;
+                  });
+                },
+                child: Text(size),
+              );
+            }).toList(),
+          ),
+        );
+      },
+    );
+  }
 
+  void openARViewer(String modelPath) async {
+    final localPath = await getLocalModelPath(modelPath);
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ARViewerPage(modelFilePath: localPath),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
+    String? displayModelPath;
+    if (matchedSize != null && selectedClothingName != null && selectedSizeForClothes != null) {
+      displayModelPath = getCombinedModelPath(selectedClothingName!, selectedSizeForClothes!, matchedSize!);
+    }
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: isLoading
@@ -207,17 +191,22 @@ void showSizePicker(ClothingItem item) {
               children: [
                 SizedBox(height: 30),
                 Text(
-                  "Saiz padanan anda: $matchedSize",
+                  "Avatar anda bersaiz: $matchedSize",
                   style: TextStyle(fontSize: 20, color: Colors.black),
                 ),
+                if (selectedSizeForClothes != null)
+                  Text(
+                    "Pakaian dipilih saiz: $selectedSizeForClothes",
+                    style: TextStyle(fontSize: 16, color: Colors.grey[700]),
+                  ),
                 SizedBox(height: 10),
                 Container(
-                  height: 750,
+                  height: 400,
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: FutureBuilder<String>(
-                    future: getLocalModelPath(
-                      selectedClothingModel ?? getAvatarAssetPath(matchedSize!),
-                    ),
+                    future: displayModelPath != null
+                        ? getLocalModelPath(displayModelPath)
+                        : getLocalModelPath('assets/avatar/avatar_${matchedSize!.toLowerCase()}.glb'),
                     builder: (context, snapshot) {
                       if (!snapshot.hasData) {
                         return Center(child: CircularProgressIndicator());
@@ -234,8 +223,14 @@ void showSizePicker(ClothingItem item) {
                     },
                   ),
                 ),
+                if (displayModelPath != null)
+                  ElevatedButton(
+                    onPressed: () => openARViewer(displayModelPath!),
+                    child: Text("Try in AR"),
+                  ),
+                SizedBox(height: 10),
                 Padding(
-                  padding: const EdgeInsets.only(top: 10.0, bottom: 16.0),
+                  padding: const EdgeInsets.only(bottom: 16.0),
                   child: SizedBox(
                     height: 160,
                     child: ListView.builder(
@@ -278,6 +273,29 @@ void showSizePicker(ClothingItem item) {
                 ),
               ],
             ),
+    );
+  }
+}
+
+class ARViewerPage extends StatelessWidget {
+  final String modelFilePath;
+
+  const ARViewerPage({Key? key, required this.modelFilePath}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("AR View")),
+      body: ModelViewer(
+        src: 'https://fyp-apps-53f7c.web.app/floral_s_s.glb',
+        alt: "AR Model",
+        ar: true,
+        arModes: ['scene-viewer', 'webxr', 'quick-look'],
+        autoRotate: true,
+        cameraControls: true,
+        disableZoom: false,
+        backgroundColor: Colors.white,
+      ),
     );
   }
 }

@@ -93,7 +93,7 @@ class _ARAvatarViewerState extends State<ARAvatarViewer> {
     modelNode = ARNode(
       name: "avatar_node",
       type: NodeType.webGLB,
-      uri: "https://fyp-apps-53f7c.web.app/a.glb",
+      uri: "https://fyp-apps-53f7c.web.app/floral_s_s.glb",
       position: Vector3(0.0, 0.0, -1.0),
       rotation: Vector4(0.0, 1.0, 0.0, 0.0),
       scale: Vector3(1.0, 1.0, 1.0),
@@ -121,7 +121,7 @@ class _ARAvatarViewerState extends State<ARAvatarViewer> {
       modelNode = ARNode(
         name: "avatar_node",
         type: NodeType.webGLB,
-        uri: "https://fyp-apps-53f7c.web.app/a.glb",
+        uri: "https://fyp-apps-53f7c.web.app/floral_s_s.glb",
         position: newPosition,
         rotation: Vector4(0.0, 1.0, 0.0, 0.0),
         scale: Vector3(1.0, 1.0, 1.0),
