@@ -5,6 +5,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:model_viewer_plus/model_viewer_plus.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:screenshot/screenshot.dart';
 
 class ClothingItem {
   final String name;
@@ -51,6 +53,77 @@ class _MatcherPageState extends State<MatcherPage> {
       availableSizes: ['S', 'M', 'L', 'XL'],
     ),
   ];
+  final Map<String, Map<String, String>> clothingMeasurements = {
+  'S': {
+    'Shoulder': '15"',
+    'Hip': '36"',
+    'Chest': '39"',
+    'Waist': '26"',
+    'Labuh Kain': '39"',
+    'Labuh Tangan': '22"',
+    'Labuh Baju': '39"',
+  },
+  'M': {
+    'Shoulder': '16"',
+    'Hip': '41"',
+    'Chest': '42"',
+    'Waist': '28"',
+    'Labuh Kain': '40"',
+    'Labuh Tangan': '22"',
+    'Labuh Baju': '40"',
+  },
+  'L': {
+    'Shoulder': '17"',
+    'Hip': '44"',
+    'Chest': '46"',
+    'Waist': '30"',
+    'Labuh Kain': '40"',
+    'Labuh Tangan': '23"',
+    'Labuh Baju': '41"',
+  },
+  'XL': {
+   'Shoulder': '18"',
+    'Hip': '48"',
+    'Chest': '50"',
+    'Waist': '32"',
+    'Labuh Kain': '41"',
+    'Labuh Tangan': '23"',
+    'Labuh Baju': '42"',
+  },
+};
+Widget buildMeasurementView(String size) {
+  final measurements = clothingMeasurements[size];
+  if (measurements == null) return SizedBox.shrink();
+
+  return Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "Ukuran Pakaian (Saiz $size)",
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+        SizedBox(height: 8),
+        Wrap(
+          spacing: 16,
+          runSpacing: 8,
+          children: measurements.entries.map((entry) {
+            return Chip(
+              label: Text("${entry.key}: ${entry.value}"),
+              backgroundColor: Colors.grey[100],
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+                side: BorderSide(color: Colors.black12),
+              ),
+            );
+          }).toList(),
+        ),
+      ],
+    ),
+  );
+}
+
 
   @override
   void initState() {
@@ -104,24 +177,24 @@ class _MatcherPageState extends State<MatcherPage> {
   int getSizeScore(double value, String type) {
     switch (type) {
       case "height":
-        if (value < 155) return 1;
-        if (value < 165) return 2;
-        if (value < 175) return 3;
+        if (value < 152.5) return 1;
+        if (value < 153.5) return 2;
+        if (value < 154.75) return 3;
         return 4;
       case "hip":
-        if (value < 85) return 1;
-        if (value < 95) return 2;
-        if (value < 105) return 3;
+        if (value < 86) return 1;
+        if (value < 100) return 2;
+        if (value < 113) return 3;
         return 4;
       case "chest":
-        if (value < 85) return 1;
-        if (value < 95) return 2;
-        if (value < 105) return 3;
+        if (value < 86) return 1;
+        if (value < 100) return 2;
+        if (value < 113) return 3;
         return 4;
       case "waist":
-        if (value < 70) return 1;
-        if (value < 80) return 2;
-        if (value < 90) return 3;
+        if (value < 66) return 1;
+        if (value < 86) return 2;
+        if (value < 117) return 3;
         return 4;
       default:
         return 1;
@@ -166,15 +239,19 @@ class _MatcherPageState extends State<MatcherPage> {
     );
   }
 
-  void openARViewer(String modelPath) async {
-    final localPath = await getLocalModelPath(modelPath);
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ARViewerPage(modelFilePath: localPath),
+void openARViewer(String clothingName, String clothingSize, String avatarSize) {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => ARViewerPage(
+        clothingName: clothingName,
+        clothingSize: clothingSize,
+        avatarSize: avatarSize,
       ),
-    );
-  }
+    ),
+  );
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -194,11 +271,14 @@ class _MatcherPageState extends State<MatcherPage> {
                   "Avatar anda bersaiz: $matchedSize",
                   style: TextStyle(fontSize: 20, color: Colors.black),
                 ),
-                if (selectedSizeForClothes != null)
-                  Text(
-                    "Pakaian dipilih saiz: $selectedSizeForClothes",
-                    style: TextStyle(fontSize: 16, color: Colors.grey[700]),
-                  ),
+if (selectedSizeForClothes != null) ...[
+  Text(
+    "Pakaian dipilih saiz: $selectedSizeForClothes",
+    style: TextStyle(fontSize: 16, color: Colors.grey[700]),
+  ),
+  buildMeasurementView(selectedSizeForClothes!),
+],
+
                 SizedBox(height: 10),
                 Container(
                   height: 400,
@@ -223,11 +303,17 @@ class _MatcherPageState extends State<MatcherPage> {
                     },
                   ),
                 ),
-                if (displayModelPath != null)
-                  ElevatedButton(
-                    onPressed: () => openARViewer(displayModelPath!),
-                    child: Text("Try in AR"),
-                  ),
+if (displayModelPath != null)
+  ElevatedButton(
+    onPressed: () => openARViewer(
+      selectedClothingName!,
+      selectedSizeForClothes!,
+      matchedSize!,
+    ),
+    child: Text("Try in AR"),
+  ),
+  
+
                 SizedBox(height: 10),
                 Padding(
                   padding: const EdgeInsets.only(bottom: 16.0),
@@ -277,24 +363,63 @@ class _MatcherPageState extends State<MatcherPage> {
   }
 }
 
-class ARViewerPage extends StatelessWidget {
-  final String modelFilePath;
+class ARViewerPage extends StatefulWidget {
+  final String clothingName;
+  final String clothingSize;
+  final String avatarSize;
 
-  const ARViewerPage({Key? key, required this.modelFilePath}) : super(key: key);
+  const ARViewerPage({
+    Key? key,
+    required this.clothingName,
+    required this.clothingSize,
+    required this.avatarSize,
+  }) : super(key: key);
+
+  @override
+  State<ARViewerPage> createState() => _ARViewerPageState();
+}
+
+class _ARViewerPageState extends State<ARViewerPage> {
+  final ScreenshotController screenshotController = ScreenshotController();
+
+  Future<void> shareScreenshot() async {
+    final image = await screenshotController.capture();
+    if (image == null) return;
+
+    final directory = await getTemporaryDirectory();
+    final imagePath = await File('${directory.path}/shared_model.png').create();
+    await imagePath.writeAsBytes(image);
+
+    await Share.shareXFiles([XFile(imagePath.path)], text: 'Check out my 3D model in AR!');
+  }
 
   @override
   Widget build(BuildContext context) {
+    final String modelUrl =
+        'https://fyp-apps-53f7c.web.app/${widget.clothingName.toLowerCase()}_${widget.clothingSize.toLowerCase()}_${widget.avatarSize.toLowerCase()}.glb';
+
     return Scaffold(
-      appBar: AppBar(title: Text("AR View")),
-      body: ModelViewer(
-        src: 'https://fyp-apps-53f7c.web.app/floral_s_s.glb',
-        alt: "AR Model",
-        ar: true,
-        arModes: ['scene-viewer', 'webxr', 'quick-look'],
-        autoRotate: true,
-        cameraControls: true,
-        disableZoom: false,
-        backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: Text("AR View"),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.share),
+            onPressed: shareScreenshot,
+          ),
+        ],
+      ),
+      body: Screenshot(
+        controller: screenshotController,
+        child: ModelViewer(
+          src: modelUrl,
+          alt: "AR Model",
+          ar: true,
+          arModes: ['scene-viewer', 'webxr', 'quick-look'],
+          autoRotate: true,
+          cameraControls: true,
+          disableZoom: false,
+          backgroundColor: Colors.white,
+        ),
       ),
     );
   }

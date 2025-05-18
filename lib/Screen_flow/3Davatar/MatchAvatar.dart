@@ -101,24 +101,24 @@ class _AvatarMatcherPageState extends State<AvatarMatcherPage> with TickerProvid
   int getSizeScore(double value, String type) {
     switch (type) {
       case "height":
-        if (value < 155) return 1;
-        if (value < 165) return 2;
-        if (value < 175) return 3;
+        if (value < 152.25) return 1;
+        if (value < 153.5) return 2;
+        if (value < 154.75) return 3;
         return 4;
       case "hip":
-        if (value < 85) return 1;
-        if (value < 95) return 2;
-        if (value < 105) return 3;
+        if (value < 86) return 1;
+        if (value < 100) return 2;
+        if (value < 113) return 3;
         return 4;
       case "chest":
-        if (value < 85) return 1;
-        if (value < 95) return 2;
-        if (value < 105) return 3;
+        if (value < 86) return 1;
+        if (value < 100) return 2;
+        if (value < 113) return 3;
         return 4;
       case "waist":
-        if (value < 70) return 1;
-        if (value < 80) return 2;
-        if (value < 90) return 3;
+        if (value < 66) return 1;
+        if (value < 86) return 2;
+        if (value < 117) return 3;
         return 4;
       default:
         return 1;
