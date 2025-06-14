@@ -23,10 +23,9 @@ class _ProfilePageState extends State<ProfilePage> {
   final TextEditingController _waistController = TextEditingController();
 
   final List<String> avatarList = [
-    'assets/profile/avatar 1.png',
-    'assets/profile/avatar 2.png',
-    'assets/profile/avatar 3.png',
-    'assets/profile/avatar 4.png',
+    'assets/profile/avatar 1.jpg',
+    'assets/profile/avatar 2.jpg',
+    'assets/profile/avatar 3.jpg',
   ];
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -197,47 +196,50 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget _buildInputField(String label, TextEditingController controller, TextInputType type) {
-    return Container(
-      decoration: BoxDecoration(
-        color: const Color(0xFFFCE4EC),
-        borderRadius: BorderRadius.circular(30),
-        boxShadow: const [
-          BoxShadow(
-            color: Colors.black26,
-            offset: Offset(4, 4),
-            blurRadius: 8,
-          ),
-          BoxShadow(
-            color: Colors.white,
-            offset: Offset(-4, -4),
-            blurRadius: 8,
-          ),
-        ],
-      ),
-      child: TextFormField(
-        controller: controller,
-        keyboardType: type,
-        style: GoogleFonts.patrickHand(),
-        decoration: InputDecoration(
-          labelText: label,
-          labelStyle: GoogleFonts.patrickHand(),
-          hintText: 'Enter $label',
-          hintStyle: GoogleFonts.patrickHand(),
-          prefixIcon: const Icon(Icons.straighten),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(30.0),
-            borderSide: BorderSide.none,
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(30.0),
-            borderSide: BorderSide.none,
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(30.0),
-            borderSide: BorderSide.none,
-          ),
+  return Container(
+    decoration: BoxDecoration(
+      color: const Color(0xFFFCE4EC),
+      borderRadius: BorderRadius.circular(30),
+      boxShadow: const [
+        BoxShadow(
+          color: Colors.black26,
+          offset: Offset(4, 4),
+          blurRadius: 8,
+        ),
+        BoxShadow(
+          color: Colors.white,
+          offset: Offset(-4, -4),
+          blurRadius: 8,
+        ),
+      ],
+    ),
+    child: TextFormField(
+      controller: controller,
+      keyboardType: type,
+      style: GoogleFonts.patrickHand(),
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: GoogleFonts.patrickHand(),
+        hintText: 'Enter $label',
+        hintStyle: GoogleFonts.patrickHand(),
+        prefixIcon: Icon(
+          label == "Name" ? Icons.person : Icons.straighten,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(30.0),
+          borderSide: BorderSide.none,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(30.0),
+          borderSide: BorderSide.none,
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(30.0),
+          borderSide: BorderSide.none,
         ),
       ),
-    );
-  }
+    ),
+  );
+}
+
 }

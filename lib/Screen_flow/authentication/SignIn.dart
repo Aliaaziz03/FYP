@@ -92,8 +92,8 @@ class _SigninState extends State<Signin> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  'SIGN IN',
-                  style: GoogleFonts.patrickHandSc(
+                  'Sign In',
+                  style: GoogleFonts.patrickHand(
                     fontSize: 40,
                     color:  Colors.black,
                     fontWeight: FontWeight.bold,

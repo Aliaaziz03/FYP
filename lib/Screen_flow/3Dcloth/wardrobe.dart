@@ -21,28 +21,28 @@ class WardrobePage extends StatelessWidget {
   // Metadata for each cloth
   final List<Map<String, String>> clothDetailsList = [
     {
-      'Material': 'Silk Chiffon',
-      'Color': 'Floral Print',
-      'Size': 'S',
-      'Type': 'Dress',
-    },
-    {
-      'Material': 'Denim',
-      'Color': 'Navy Blue',
-      'Size': 'M',
-      'Type': 'Pants',
+      'Material': 'Cotton',
+      'Pattern': 'Floral',
+      'Color': 'blue, cream',
+      'Type': 'Baju kurung moden',
     },
     {
       'Material': 'Cotton',
-      'Color': 'Black & White Stripes',
-      'Size': 'L',
-      'Type': 'Shirt',
+      'Pattern': 'Geometry',
+      'Color': 'red, yellow',
+      'Type': 'Baju kurung moden',
     },
     {
-      'Material': 'Polyester',
-      'Color': 'Soft Pink',
-      'Size': 'M',
-      'Type': 'Blouse',
+      'Material': 'Silk',
+      'Pattern': 'Floral',
+      'Color': 'grey',
+      'Type': 'Baju kurung moden',
+    },
+    {
+      'Material': 'Lace',
+      'Pattern': 'Floral',
+      'Color': 'white, black',
+      'Type': 'Baju kurung moden',
     },
   ];
 
@@ -51,11 +51,11 @@ class WardrobePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Main Wardrobe'),
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.pink[50],
         foregroundColor: Colors.black,
         elevation: 0,
       ),
-      backgroundColor: Colors.grey[100],
+      backgroundColor: Colors.pink[50],
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: GridView.builder(

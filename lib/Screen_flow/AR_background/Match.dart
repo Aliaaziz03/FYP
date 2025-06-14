@@ -8,6 +8,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:screenshot/screenshot.dart';
 
+
 class ClothingItem {
   final String name;
   final String imagePath;
@@ -33,7 +34,7 @@ class _MatcherPageState extends State<MatcherPage> {
 
   final List<ClothingItem> clothingItems = [
     ClothingItem(
-      name: 'Floral',
+      name: 'Cotton',
       imagePath: 'assets/clothes/floral.png',
       availableSizes: ['S', 'M', 'L', 'XL'],
     ),
@@ -53,77 +54,76 @@ class _MatcherPageState extends State<MatcherPage> {
       availableSizes: ['S', 'M', 'L', 'XL'],
     ),
   ];
+
   final Map<String, Map<String, String>> clothingMeasurements = {
-  'S': {
-    'Shoulder': '15"',
-    'Hip': '36"',
-    'Chest': '39"',
-    'Waist': '26"',
-    'Labuh Kain': '39"',
-    'Labuh Tangan': '22"',
-    'Labuh Baju': '39"',
-  },
-  'M': {
-    'Shoulder': '16"',
-    'Hip': '41"',
-    'Chest': '42"',
-    'Waist': '28"',
-    'Labuh Kain': '40"',
-    'Labuh Tangan': '22"',
-    'Labuh Baju': '40"',
-  },
-  'L': {
-    'Shoulder': '17"',
-    'Hip': '44"',
-    'Chest': '46"',
-    'Waist': '30"',
-    'Labuh Kain': '40"',
-    'Labuh Tangan': '23"',
-    'Labuh Baju': '41"',
-  },
-  'XL': {
-   'Shoulder': '18"',
-    'Hip': '48"',
-    'Chest': '50"',
-    'Waist': '32"',
-    'Labuh Kain': '41"',
-    'Labuh Tangan': '23"',
-    'Labuh Baju': '42"',
-  },
-};
-Widget buildMeasurementView(String size) {
-  final measurements = clothingMeasurements[size];
-  if (measurements == null) return SizedBox.shrink();
+    'S': {
+      'Shoulder': '15"',
+      'Hip': '36"',
+      'Chest': '39"',
+      'Waist': '26"',
+      'Skirt length': '39"',
+      'Sleeve length': '22"',
+      'Top length': '39"',
+    },
+    'M': {
+      'Shoulder': '16"',
+      'Hip': '41"',
+      'Chest': '42"',
+      'Waist': '28"',
+      'Skirt length': '40"',
+      'Sleeve length': '22"',
+      'Top length': '40"',
+    },
+    'L': {
+      'Shoulder': '17"',
+      'Hip': '44"',
+      'Chest': '46"',
+      'Waist': '30"',
+      'Skirt length': '40"',
+      'Sleeve length': '23"',
+      'Top length': '41"',
+    },
+    'XL': {
+      'Shoulder': '18"',
+      'Hip': '48"',
+      'Chest': '50"',
+      'Waist': '32"',
+      'Skirt length': '41"',
+      'Sleeve length': '23"',
+      'Top length': '42"',
+    },
+  };
 
-  return Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          "Ukuran Pakaian (Saiz $size)",
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-        SizedBox(height: 8),
-        Wrap(
-          spacing: 16,
-          runSpacing: 8,
-          children: measurements.entries.map((entry) {
-            return Chip(
-              label: Text("${entry.key}: ${entry.value}"),
-              backgroundColor: Colors.grey[100],
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-                side: BorderSide(color: Colors.black12),
-              ),
-            );
-          }).toList(),
-        ),
-      ],
-    ),
-  );
-}
+  List<Widget> buildMeasurementView(String size) {
+    final measurements = clothingMeasurements[size];
+    if (measurements == null) return [];
 
+    return [
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(height: 8),
+            Wrap(
+              spacing: 16,
+              runSpacing: 8,
+              children: measurements.entries.map((entry) {
+                return Chip(
+                  label: Text("${entry.key}: ${entry.value}"),
+                  backgroundColor: Colors.grey[100],
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    side: BorderSide(color: Colors.black12),
+                  ),
+                );
+              }).toList(),
+            ),
+          ],
+        ),
+      ),
+    ];
+  }
 
   @override
   void initState() {
@@ -148,6 +148,8 @@ Widget buildMeasurementView(String size) {
 
     setState(() {
       matchedSize = size;
+      selectedClothingName = 'Floral'; // auto-apply floral
+      selectedSizeForClothes = size;   // match avatar size
       isLoading = false;
     });
   }
@@ -213,45 +215,74 @@ Widget buildMeasurementView(String size) {
     return tempFile.path;
   }
 
-  void showSizePicker(ClothingItem item) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text("Pilih saiz untuk ${item.name}"),
-          content: Wrap(
-            spacing: 8,
+void showSizePicker(ClothingItem item) {
+  showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        backgroundColor: Colors.pink[50],
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        title: Text(
+          "Choose clothes size",
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        content: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: item.availableSizes.map((size) {
-              return ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  setState(() {
-                    selectedClothingName = item.name;
-                    selectedSizeForClothes = size;
-                  });
-                },
-                child: Text(size),
+              final isSelected = selectedSizeForClothes == size;
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 6.0),
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    setState(() {
+                      selectedClothingName = item.name;
+                      selectedSizeForClothes = size;
+                    });
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: isSelected ? Colors.pink[400] : Colors.pink[100],
+                    foregroundColor: isSelected ? Colors.white : Colors.pink[900],
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    elevation: isSelected ? 6 : 2,
+                  ),
+                  child: Text(
+                    size,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
               );
             }).toList(),
           ),
-        );
-      },
-    );
-  }
-
-void openARViewer(String clothingName, String clothingSize, String avatarSize) {
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => ARViewerPage(
-        clothingName: clothingName,
-        clothingSize: clothingSize,
-        avatarSize: avatarSize,
-      ),
-    ),
+        ),
+      );
+    },
   );
 }
 
+
+  void openARViewer(String clothingName, String clothingSize, String avatarSize) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ARViewerPage(
+          clothingName: clothingName,
+          clothingSize: clothingSize,
+          avatarSize: avatarSize,
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -261,107 +292,201 @@ void openARViewer(String clothingName, String clothingSize, String avatarSize) {
     }
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.pink[50],
       body: isLoading
           ? Center(child: CircularProgressIndicator())
-          : Column(
-              children: [
-                SizedBox(height: 30),
-                Text(
-                  "Avatar anda bersaiz: $matchedSize",
-                  style: TextStyle(fontSize: 20, color: Colors.black),
-                ),
-if (selectedSizeForClothes != null) ...[
-  Text(
-    "Pakaian dipilih saiz: $selectedSizeForClothes",
-    style: TextStyle(fontSize: 16, color: Colors.grey[700]),
-  ),
-  buildMeasurementView(selectedSizeForClothes!),
-],
-
-                SizedBox(height: 10),
-                Container(
-                  height: 400,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: FutureBuilder<String>(
-                    future: displayModelPath != null
-                        ? getLocalModelPath(displayModelPath)
-                        : getLocalModelPath('assets/avatar/avatar_${matchedSize!.toLowerCase()}.glb'),
-                    builder: (context, snapshot) {
-                      if (!snapshot.hasData) {
-                        return Center(child: CircularProgressIndicator());
-                      }
-                      return ModelViewer(
-                        src: 'file://${snapshot.data!}',
-                        alt: "3D Model",
-                        ar: false,
-                        autoRotate: true,
-                        cameraControls: true,
-                        disableZoom: false,
-                        backgroundColor: Colors.white,
-                      );
-                    },
+          : SafeArea(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Back button
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                    child: GestureDetector(
+                      onTap: () => Navigator.pop(context),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.arrow_back, color: Colors.black),
+                          SizedBox(width: 6),
+                        ],
+                      ),
+                    ),
                   ),
-                ),
-if (displayModelPath != null)
-  ElevatedButton(
-    onPressed: () => openARViewer(
-      selectedClothingName!,
-      selectedSizeForClothes!,
-      matchedSize!,
-    ),
-    child: Text("Try in AR"),
-  ),
-  
+                  Center(
+                    child: Text(
+                      "Your Avatar Size: $matchedSize",
+                      style: TextStyle(fontSize: 20, color: Colors.black),
+                    ),
+                  ),
+                  if (selectedSizeForClothes != null) ...[
+                    SizedBox(height: 4),
+                    Center(
+                      child: Text(
+                        "Chosen Clothes Size: $selectedSizeForClothes",
+                        style: TextStyle(fontSize: 16, color: Colors.grey[700]),
+                      ),
+                    ),
+                  ],
+                  SizedBox(height: 10),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          Container(
+                            height: 400,
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: FutureBuilder<String>(
+key: ValueKey(displayModelPath ?? matchedSize),
+future: displayModelPath != null
+    ? getLocalModelPath(displayModelPath)
+    : getLocalModelPath('assets/avatar/avatar_${matchedSize!.toLowerCase()}.glb'),
 
-                SizedBox(height: 10),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 16.0),
-                  child: SizedBox(
-                    height: 160,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: clothingItems.length,
-                      itemBuilder: (context, index) {
-                        final item = clothingItems[index];
-                        return GestureDetector(
-                          onTap: () => showSizePicker(item),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 12),
-                            child: Container(
-                              width: 120,
-                              height: 140,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(color: Colors.black),
-                                color: Colors.grey[200],
-                                image: DecorationImage(
-                                  image: AssetImage(item.imagePath),
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                              alignment: Alignment.bottomCenter,
-                              child: Container(
-                                color: Colors.black.withOpacity(0.6),
-                                padding: EdgeInsets.symmetric(vertical: 4, horizontal: 6),
-                                child: Text(
-                                  item.name,
-                                  style: TextStyle(fontSize: 12, color: Colors.white),
-                                  textAlign: TextAlign.center,
-                                ),
+                              builder: (context, snapshot) {
+                                if (!snapshot.hasData) {
+                                  return Center(child: CircularProgressIndicator());
+                                }
+                                return ModelViewer(
+                                  src: 'file://${snapshot.data!}',
+                                  alt: "3D Model",
+                                  ar: false,
+                                  autoRotate: true,
+                                  cameraControls: true,
+                                  disableZoom: false,
+                                  backgroundColor: Colors.white,
+                                );
+                              },
+                            ),
+                          ),
+if (displayModelPath != null)
+  Padding(
+    padding: const EdgeInsets.symmetric(vertical: 20),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Expanded(
+          child: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 30),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [
+                  Color.fromARGB(255, 175, 69, 105),
+                  Color.fromARGB(255, 228, 157, 181)
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(30),
+              boxShadow: const [
+                BoxShadow(
+                  color: Colors.black26,
+                  blurRadius: 8,
+                  offset: Offset(4, 4),
+                ),
+                BoxShadow(
+                  color: Colors.white,
+                  offset: Offset(-4, -4),
+                  blurRadius: 8,
+                ),
+              ],
+            ),
+            child: MaterialButton(
+              onPressed: () => openARViewer(
+                selectedClothingName!,
+                selectedSizeForClothes!,
+                matchedSize!,
+              ),
+              textColor: Colors.black,
+              padding: const EdgeInsets.symmetric(vertical: 15),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30),
+              ),
+              child: const Text(
+                'Try in AR',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    ),
+  ),
+
+                          SizedBox(height: 10),
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 16.0),
+                            child: SizedBox(
+                              height: 160,
+                              child: ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                itemCount: clothingItems.length,
+                                itemBuilder: (context, index) {
+                                  final item = clothingItems[index];
+                                  return GestureDetector(
+                                    onTap: () => showSizePicker(item),
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                                      child: Container(
+                                        width: 120,
+                                        height: 140,
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(12),
+                                          border: Border.all(color: Colors.black),
+                                          color: Colors.grey[200],
+                                          image: DecorationImage(
+                                            image: AssetImage(item.imagePath),
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                        alignment: Alignment.bottomCenter,
+                                        child: Container(
+                                          color: Colors.black.withOpacity(0.6),
+                                          padding: EdgeInsets.symmetric(vertical: 4, horizontal: 6),
+                                          child: Text(
+                                            item.name,
+                                            style: TextStyle(fontSize: 12, color: Colors.white),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
                               ),
                             ),
                           ),
-                        );
-                      },
+                          if (selectedSizeForClothes != null) ...[
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                              child: Text(
+                                "Clothes measurement details:",
+                                style: TextStyle(fontSize: 16, color: Colors.black),
+                              ),
+                            ),
+                            SizedBox(
+                              height: 100,
+                              child: ListView(
+                                scrollDirection: Axis.horizontal,
+                                padding: const EdgeInsets.symmetric(horizontal: 16),
+                                children: buildMeasurementView(selectedSizeForClothes!),
+                              ),
+                            ),
+                            SizedBox(height: 20),
+                          ],
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
     );
   }
 }
+
 
 class ARViewerPage extends StatefulWidget {
   final String clothingName;

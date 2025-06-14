@@ -107,7 +107,7 @@ class _SignUpState extends State<SignUp> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            'SIGN UP',
+                            'Sign Up',
                             style: GoogleFonts.patrickHand(
                               fontSize: 40,
                               color: Colors.black,

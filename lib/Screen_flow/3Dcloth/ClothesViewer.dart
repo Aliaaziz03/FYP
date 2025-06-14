@@ -15,10 +15,10 @@ class ModelViewerPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text("3D Cloth Viewer"),
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.pink[50],
         foregroundColor: Colors.black,
       ),
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.pink[50],
       body: Column(
         children: [
           Expanded(
@@ -37,7 +37,7 @@ class ModelViewerPage extends StatelessWidget {
             child: Container(
               padding: EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.grey[100],
+                color: Colors.pink[50],
                 borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
               ),
               child: Column(
